@@ -891,6 +891,6 @@
       });
     }
 
-    return qs;
+    return shuffle(qs);
   };
 })();
