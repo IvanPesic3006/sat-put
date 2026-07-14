@@ -867,45 +867,28 @@
       );
     }
 
-    // Fill to target with mixed items
-    const fillDomains = ['Algebra', 'Advanced Math', 'Problem-Solving & Data Analysis', 'Geometry & Trigonometry'];
+    // Fill to target (bypass domain caps if needed)
     let fill = 0;
-    while (qs.length < target && fill < 300) {
+    while (qs.length < target && fill < 500) {
       fill++;
-      const dom = fillDomains[fill % 4];
-      const a = (fill % 9) + 2;
-      const b = (fill % 11) - 5;
-      const x = (fill % 7) + 1;
+      const a = (fill % 13) + 2;
+      const b = (fill % 19) - 9;
+      const x = (fill % 11) + 1;
       const c = a * x + b;
-      const skills = {
-        Algebra: 'Linear equations in one variable',
-        'Advanced Math': 'Nonlinear equations',
-        'Problem-Solving & Data Analysis': 'Percentages',
-        'Geometry & Trigonometry': 'Right triangles'
-      };
-      const stems = {
-        Algebra: `If ${a}x ${b >= 0 ? '+ ' + b : '− ' + Math.abs(b)} = ${c}, what is x?`,
-        'Advanced Math': `If x² = ${x * x + fill}, what is the positive value of x?`,
-        'Problem-Solving & Data Analysis': `What is ${10 + (fill % 40)}% of ${200 + fill}?`,
-        'Geometry & Trigonometry': `A right triangle has legs ${3 + (fill % 5)} and ${4 + (fill % 6)}. What is the hypotenuse?`
-      };
-      const correct = {
-        Algebra: String(x),
-        'Advanced Math': String(Math.floor(Math.sqrt(x * x + fill))),
-        'Problem-Solving & Data Analysis': String(((200 + fill) * (10 + (fill % 40)) / 100).toFixed(0)),
-        'Geometry & Trigonometry': String(Math.sqrt(Math.pow(3 + (fill % 5), 2) + Math.pow(4 + (fill % 6), 2)).toFixed(0))
-      };
-      const stem = stems[dom];
-      const ans = correct[dom];
-      mc(
-        `fill-${dom.slice(0, 3)}-${fill}`,
-        dom,
-        skills[dom],
+      const stem = `Practice ${fill}: If ${a}x ${b >= 0 ? '+ ' + b : '− ' + Math.abs(b)} = ${c}, what is x?`;
+      if (seen.has(stem)) continue;
+      const { choices, answer } = pick4(String(x), [String(x + 1), String(x - 1), String(x + 2), String(-x)]);
+      seen.add(stem);
+      qs.push({
+        id: `fill-lin-${fill}`,
+        passage: null,
+        domain: 'Algebra',
+        skill: 'Linear equations in one variable',
         stem,
-        ans,
-        [String(Number(ans) + 1), String(Number(ans) - 1), String(Number(ans) + 2), String(Number(ans) + 3)],
-        `Answer: ${ans}.`
-      );
+        choices,
+        answer,
+        explain: `x = ${x}.`
+      });
     }
 
     return qs;
