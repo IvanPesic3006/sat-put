@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAT Mini Practice — Random Questions</title>
+  <style>
+    :root {
+      --sat-blue: #1e3a8a;
+      --sat-blue-light: #2563eb;
+      --sat-blue-bg: #eff6ff;
+      --sat-border: #cbd5e1;
+      --sat-text: #0f172a;
+      --sat-muted: #64748b;
+      --sat-white: #ffffff;
+      --sat-green: #15803d;
+      --sat-red: #b91c1c;
+      --sat-yellow: #fef9c3;
+      --sat-orange: #ea580c;
+      --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+      --pie-r: 54;
+      --pie-c: 339.292;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: #f1f5f9; color: var(--sat-text); min-height: 100vh; }
+    .hidden { display: none !important; }
+
+    .screen { min-height: 100vh; display: flex; flex-direction: column; }
+
+    .welcome {
+      align-items: center; justify-content: center; padding: 2rem;
+      background: linear-gradient(180deg, var(--sat-blue) 0%, #1e40af 100%);
+    }
+    .welcome-card {
+      background: var(--sat-white); border-radius: 12px; max-width: 680px; width: 100%;
+      padding: 2.5rem; box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+    .welcome-logo { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.5rem; }
+    .welcome-logo .badge {
+      background: var(--sat-blue); color: white; font-weight: 700; font-size: .75rem;
+      padding: .35rem .6rem; border-radius: 4px; letter-spacing: .05em;
+    }
+    .welcome-logo h1 { font-size: 1.5rem; font-weight: 600; color: var(--sat-blue); }
+    .welcome-card h2 { font-size: 1.25rem; margin-bottom: 1rem; font-weight: 600; }
+    .welcome-card p, .welcome-card li { color: var(--sat-muted); line-height: 1.6; font-size: .95rem; }
+    .welcome-card ul { margin: 1rem 0 1.5rem 1.25rem; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.5rem 0; }
+    .info-box {
+      background: var(--sat-blue-bg); border: 1px solid #bfdbfe; border-radius: 8px;
+      padding: 1rem; text-align: center;
+    }
+    .info-box .num { font-size: 1.75rem; font-weight: 700; color: var(--sat-blue); }
+    .info-box .lbl { font-size: .8rem; color: var(--sat-muted); margin-top: .25rem; }
+
+    .btn-primary {
+      width: 100%; padding: .9rem 1.5rem; background: var(--sat-blue-light); color: white;
+      border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--sat-blue); }
+    .btn-secondary {
+      padding: .65rem 1.25rem; background: white; color: var(--sat-blue);
+      border: 2px solid var(--sat-blue); border-radius: 6px; font-size: .9rem; font-weight: 600; cursor: pointer;
+    }
+    .btn-ghost {
+      padding: .65rem 1rem; background: transparent; color: var(--sat-muted);
+      border: 1px solid var(--sat-border); border-radius: 6px; font-size: .85rem; cursor: pointer;
+    }
+    .btn-translate {
+      width: 100%; padding: .65rem; margin-bottom: .75rem;
+      background: #fff7ed; border: 2px solid #fdba74; color: #9a3412;
+      border-radius: 8px; font-weight: 600; font-size: .85rem; cursor: pointer;
+    }
+    .btn-translate:hover { background: #ffedd5; }
+    .disclaimer { font-size: .75rem; color: var(--sat-muted); margin-top: 1rem; text-align: center; }
+
+    /* ── Timer bar ── */
+    .timer-bar {
+      background: #0f172a;
+      color: white;
+      padding: 1rem 1.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,.2);
+    }
+    .timer-bar-meta { text-align: left; min-width: 160px; }
+    .timer-bar-meta .section-label { font-weight: 700; font-size: 1rem; }
+    .timer-bar-meta .scale-note { font-size: .72rem; color: #94a3b8; margin-top: .2rem; }
+    .timer-bar-meta .question-pill {
+      display: inline-block; margin-top: .4rem; background: rgba(255,255,255,.1);
+      padding: .2rem .55rem; border-radius: 12px; font-size: .75rem;
+    }
+
+    .pie-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
+    .pie-wrap.lg { width: 140px; height: 140px; }
+    .pie-wrap.sm { width: 72px; height: 72px; }
+    .pie-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .pie-wrap circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+    .pie-wrap .pie-track { stroke: rgba(255,255,255,.15); }
+    .pie-wrap .pie-fill { stroke: #3b82f6; transition: stroke-dashoffset .35s linear; }
+    .pie-wrap .pie-fill.warn { stroke: var(--sat-orange); }
+    .pie-wrap .pie-fill.crit { stroke: #ef4444; }
+    .pie-center {
+      position: absolute; text-align: center; pointer-events: none;
+    }
+    .pie-wrap.lg .pie-center .time { font-size: 1.65rem; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 1; }
+    .pie-wrap.lg .pie-center .lbl { font-size: .65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: .06em; margin-top: .15rem; }
+    .pie-wrap.sm .pie-center .time { font-size: .8rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .pie-wrap.sm .pie-center .lbl { font-size: .55rem; color: #94a3b8; }
+
+    .timer-bar-right { display: flex; align-items: center; gap: .75rem; }
+    .tools-btn {
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+      color: white; padding: .45rem .8rem; border-radius: 6px; font-size: .8rem; cursor: pointer;
+    }
+
+    .exam-body {
+      flex: 1; display: grid; grid-template-columns: 1fr 300px;
+      max-width: 1200px; margin: 0 auto; width: 100%; background: white;
+      min-height: calc(100vh - 180px);
+    }
+    .question-panel { padding: 2rem 2.5rem; border-right: 1px solid var(--sat-border); overflow-y: auto; }
+    .passage {
+      background: #f8fafc; border: 1px solid var(--sat-border); border-radius: 8px;
+      padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; line-height: 1.75; font-size: .95rem;
+    }
+    .passage .cite { font-style: italic; color: var(--sat-muted); font-size: .85rem; margin-bottom: .75rem; }
+    .question-stem { font-size: 1rem; line-height: 1.65; margin-bottom: 1.25rem; font-weight: 500; }
+    .choices { display: flex; flex-direction: column; gap: .6rem; }
+    .choice {
+      display: flex; align-items: flex-start; gap: .75rem; padding: .85rem 1rem;
+      border: 2px solid var(--sat-border); border-radius: 8px; cursor: pointer;
+      font-size: .95rem; line-height: 1.5;
+    }
+    .choice:hover { border-color: var(--sat-blue-light); background: var(--sat-blue-bg); }
+    .choice.selected { border-color: var(--sat-blue-light); background: #dbeafe; }
+    .choice-letter {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+      border: 2px solid var(--sat-border); display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .8rem; background: white;
+    }
+    .choice.selected .choice-letter { background: var(--sat-blue-light); border-color: var(--sat-blue-light); color: white; }
+
+    .nav-panel { padding: 1.25rem; background: #f8fafc; display: flex; flex-direction: column; }
+    .nav-panel h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--sat-muted); margin-bottom: .75rem; }
+    .q-timer-box {
+      background: white; border: 1px solid var(--sat-border); border-radius: 10px;
+      padding: .85rem; margin-bottom: 1rem; display: flex; align-items: center; gap: .75rem;
+    }
+    .q-timer-box .q-timer-info { flex: 1; }
+    .q-timer-box .q-timer-info .title { font-size: .75rem; font-weight: 600; color: var(--sat-muted); }
+    .q-timer-box .q-timer-info .avg { font-size: .68rem; color: var(--sat-muted); }
+    .question-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: .35rem; margin-bottom: 1rem; }
+    .q-btn {
+      aspect-ratio: 1; border: 2px solid var(--sat-border); border-radius: 6px;
+      background: white; font-size: .75rem; font-weight: 600; cursor: pointer; position: relative;
+    }
+    .q-btn.current { border-color: var(--sat-blue-light); background: #dbeafe; }
+    .q-btn.answered { background: var(--sat-blue-light); color: white; border-color: var(--sat-blue-light); }
+    .q-btn.marked::after { content: "⚑"; position: absolute; top: -3px; right: -1px; font-size: .5rem; color: #d97706; }
+    .mark-btn {
+      width: 100%; padding: .5rem; background: white; border: 1px solid var(--sat-border);
+      border-radius: 6px; font-size: .8rem; cursor: pointer; color: var(--sat-muted); margin-bottom: .5rem;
+    }
+    .mark-btn.active { background: var(--sat-yellow); border-color: #fbbf24; color: #92400e; }
+    .nav-actions { margin-top: auto; display: flex; flex-direction: column; gap: .5rem; }
+    .nav-row { display: flex; gap: .5rem; }
+    .nav-row button { flex: 1; }
+
+    .break-screen { align-items: center; justify-content: center; background: var(--sat-blue-bg); padding: 2rem; }
+    .break-card {
+      background: white; border-radius: 12px; padding: 2.5rem; max-width: 480px;
+      text-align: center; box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+    .break-card h2 { font-size: 1.5rem; margin-bottom: .5rem; color: var(--sat-blue); }
+    .break-card p { color: var(--sat-muted); margin-bottom: 1.5rem; }
+
+    .results-screen { align-items: center; padding: 2rem; background: #f1f5f9; }
+    .results-card {
+      background: white; border-radius: 12px; max-width: 720px; width: 100%;
+      padding: 2.5rem; box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+    .results-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--sat-border); }
+    .total-score { font-size: 4rem; font-weight: 800; color: var(--sat-blue); line-height: 1; }
+    .score-range { font-size: .9rem; color: var(--sat-muted); margin-top: .5rem; }
+    .section-scores { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+    .section-score-box { background: var(--sat-blue-bg); border-radius: 8px; padding: 1.25rem; text-align: center; }
+    .section-score-box .score { font-size: 2rem; font-weight: 700; color: var(--sat-blue); }
+    .section-score-box .name { font-size: .85rem; color: var(--sat-muted); }
+    .section-score-box .raw { font-size: .75rem; color: var(--sat-muted); margin-top: .35rem; }
+    .review-item {
+      border: 1px solid var(--sat-border); border-radius: 8px; padding: 1rem; margin-bottom: .75rem; font-size: .9rem;
+    }
+    .ri-correct { color: var(--sat-green); font-weight: 600; }
+    .ri-wrong { color: var(--sat-red); font-weight: 600; }
+    .ri-explain { color: var(--sat-muted); font-size: .85rem; margin-top: .5rem; }
+    .results-actions { display: flex; gap: .75rem; margin-top: 1.5rem; justify-content: center; }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,.55);
+      display: flex; align-items: center; justify-content: center; z-index: 300; padding: 1rem;
+    }
+    .modal {
+      background: white; border-radius: 12px; max-width: 520px; width: 100%;
+      max-height: 85vh; overflow-y: auto; box-shadow: 0 25px 60px rgba(0,0,0,.3);
+    }
+    .modal-header {
+      padding: 1rem 1.25rem; border-bottom: 1px solid var(--sat-border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .modal-header h3 { font-size: 1rem; color: var(--sat-blue); }
+    .modal-close { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--sat-muted); line-height: 1; }
+    .modal-body { padding: 1.25rem; font-size: .95rem; line-height: 1.65; }
+    .modal-body .tr-block { margin-bottom: 1.25rem; }
+    .modal-body .tr-label { font-size: .72rem; text-transform: uppercase; color: var(--sat-muted); font-weight: 700; margin-bottom: .35rem; letter-spacing: .04em; }
+    .modal-body .tr-quote { font-style: italic; color: var(--sat-text); background: #f8fafc; border-left: 3px solid var(--sat-blue-light); padding: .65rem .85rem; border-radius: 0 6px 6px 0; margin-top: .25rem; }
+    .modal-body .tr-choice { padding: .45rem 0; border-bottom: 1px solid #f1f5f9; line-height: 1.55; }
+    .modal-body .tr-choice:last-child { border-bottom: none; }
+
+    .calc-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.4);
+      display: flex; align-items: center; justify-content: center; z-index: 200;
+    }
+    .calc-box { background: #1e293b; border-radius: 12px; padding: 1rem; width: 260px; }
+    .calc-display {
+      background: #0f172a; color: #e2e8f0; font-size: 1.5rem; text-align: right;
+      padding: .75rem; border-radius: 6px; margin-bottom: .75rem; min-height: 48px;
+    }
+    .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .4rem; }
+    .calc-grid button { padding: .65rem; border: none; border-radius: 6px; background: #334155; color: white; cursor: pointer; }
+    .calc-grid button.op { background: #2563eb; }
+    .calc-grid button.eq { background: #15803d; grid-column: span 2; }
+
+    @media (max-width: 768px) {
+      .exam-body { grid-template-columns: 1fr; }
+      .timer-bar { gap: 1rem; padding: .85rem; }
+      .pie-wrap.lg { width: 110px; height: 110px; }
+      .question-panel { padding: 1.25rem; }
+      .section-scores { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="screen-welcome" class="screen welcome">
+  <div class="welcome-card">
+    <div class="welcome-logo">
+      <span class="badge">PRACTICE</span>
+      <h1>SAT Mini Diagnostic</h1>
+    </div>
+    <h2>Free test — 20 English + 20 Math</h2>
+    <p>Each session: <strong>20 Reading &amp; Writing</strong> then <strong>20 Math</strong> questions. Math pool covers all official SAT domains (Algebra, Advanced Math, Data Analysis, Geometry/Trig). Timers scale from the real Digital SAT.</p>
+    <div class="info-grid">
+      <div class="info-box"><div class="num">20+20</div><div class="lbl">Questions per test</div></div>
+      <div class="info-box"><div class="num">240+</div><div class="lbl">R&amp;W pool</div></div>
+      <div class="info-box"><div class="num">~24 min</div><div class="lbl">R&amp;W (scaled)</div></div>
+      <div class="info-box"><div class="num">~32 min</div><div class="lbl">Math (scaled)</div></div>
+    </div>
+    <ul>
+      <li><strong>R&amp;W first</strong>, short break, then <strong>Math</strong> with calculator.</li>
+      <li>Large <strong>section pie timer</strong> + per-question pie timer.</li>
+      <li><strong>Prijevod na hrvatski</strong> on every R&amp;W question (with choice explanations).</li>
+    </ul>
+    <button class="btn-primary" id="btn-start">Begin Test</button>
+    <p class="disclaimer">Unofficial practice · Not affiliated with College Board</p>
+  </div>
+</div>
+
+<div id="screen-exam" class="screen hidden">
+  <div class="timer-bar">
+    <div class="timer-bar-meta">
+      <div class="section-label" id="header-section">Reading and Writing</div>
+      <div class="scale-note" id="scale-note">Scaled from 64-min SAT section</div>
+      <span class="question-pill" id="header-qnum">Question 1 of 20</span>
+    </div>
+    <div class="pie-wrap lg">
+      <svg viewBox="0 0 120 120"><circle class="pie-track" cx="60" cy="60" r="54"/><circle class="pie-fill" id="section-pie" cx="60" cy="60" r="54"/></svg>
+      <div class="pie-center">
+        <div class="time" id="section-time-text">12:00</div>
+        <div class="lbl">Section</div>
+      </div>
+    </div>
+    <div class="timer-bar-right">
+      <button class="tools-btn hidden" id="btn-calc" type="button">Calculator</button>
+    </div>
+  </div>
+  <div class="exam-body">
+    <div class="question-panel" id="question-panel"></div>
+    <aside class="nav-panel">
+      <div class="q-timer-box">
+        <div class="pie-wrap sm">
+          <svg viewBox="0 0 120 120"><circle class="pie-track" cx="60" cy="60" r="54"/><circle class="pie-fill" id="question-pie" cx="60" cy="60" r="54"/></svg>
+          <div class="pie-center">
+            <div class="time" id="question-time-text">1:11</div>
+            <div class="lbl">Q</div>
+          </div>
+        </div>
+        <div class="q-timer-info">
+          <div class="title">This question</div>
+          <div class="avg" id="q-avg-label">SAT avg: 71 sec</div>
+        </div>
+      </div>
+      <button class="btn-translate" id="btn-translate">🇭🇷 Prijevod na hrvatski</button>
+      <h3>Questions</h3>
+      <div class="question-grid" id="question-grid"></div>
+      <button class="mark-btn" id="btn-mark">⚑ Mark for Review</button>
+      <div class="nav-actions">
+        <div class="nav-row">
+          <button class="btn-ghost" id="btn-prev">← Back</button>
+          <button class="btn-secondary" id="btn-next">Next →</button>
+        </div>
+        <button class="btn-primary" id="btn-finish-section">Finish Section</button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div id="screen-break" class="screen break-screen hidden">
+  <div class="break-card">
+    <h2>Break</h2>
+    <p>You finished Reading &amp; Writing. Take a short break before Math — or continue right away.</p>
+    <button class="btn-primary" id="btn-start-math">Continue to Math →</button>
+  </div>
+</div>
+
+<div id="screen-results" class="screen results-screen hidden">
+  <div class="results-card">
+    <div class="results-header">
+      <div class="total-score" id="total-score">—</div>
+      <div style="color:var(--sat-muted)">Estimated SAT Total (400–1600)</div>
+      <div class="score-range" id="score-range"></div>
+    </div>
+    <div class="section-scores">
+      <div class="section-score-box">
+        <div class="score" id="rw-score">—</div>
+        <div class="name">Reading &amp; Writing</div>
+        <div class="raw" id="rw-raw"></div>
+      </div>
+      <div class="section-score-box">
+        <div class="score" id="math-score">—</div>
+        <div class="name">Math</div>
+        <div class="raw" id="math-raw"></div>
+      </div>
+    </div>
+    <h3 style="margin-bottom:1rem">Answer Review</h3>
+    <div id="review-list"></div>
+    <div class="results-actions">
+      <button class="btn-primary" id="btn-retry">New Random Test</button>
+    </div>
+    <p class="disclaimer" style="margin-top:1.5rem">20 R&amp;W + 20 Math per session. Unofficial score estimate — not affiliated with College Board.</p>
+  </div>
+</div>
+
+<div class="calc-overlay hidden" id="calc-overlay">
+  <div class="calc-box">
+    <div class="calc-display" id="calc-display">0</div>
+    <div class="calc-grid" id="calc-grid"></div>
+    <button class="btn-ghost" style="width:100%;margin-top:.5rem;color:#94a3b8;border-color:#475569" id="calc-close" type="button">Close</button>
+  </div>
+</div>
+
+<div class="modal-overlay hidden" id="translate-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Prijevod na hrvatski</h3>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+    <div class="modal-body" id="translate-body"></div>
+  </div>
+</div>
+
+<script src="rw-questions-data.js"></script>
+<script src="math-bank.js"></script>
+<script src="questions-bank.js"></script>
+<script>
+const SAT_RW = { min: 64, q: 54, perQ: 71 };
+const SAT_MATH = { min: 70, q: 44, perQ: 95 };
+const RW_Q = 20;
+const MATH_Q = 20;
+const PIE_C = 2 * Math.PI * 54;
+
+let section = 'rw';
+let rwQuestions = [];
+let mathQuestions = [];
+let rwAnswers = [];
+let mathAnswers = [];
+let rwMarked = [];
+let mathMarked = [];
+let currentIndex = 0;
+let sectionTimeLeft = 0;
+let sectionTimeTotal = 0;
+let questionTimeLeft = 0;
+let questionTimeTotal = 0;
+let sectionTimerId = null;
+let questionTimerId = null;
+
+function stripHtml(s) {
+  return String(s || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+}
+
+function formatTime(s) {
+  s = Math.max(0, Math.ceil(s));
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
+
+function setPie(circleEl, remaining, total) {
+  const pct = total > 0 ? remaining / total : 0;
+  circleEl.style.strokeDasharray = PIE_C;
+  circleEl.style.strokeDashoffset = PIE_C * (1 - pct);
+  circleEl.classList.remove('warn', 'crit');
+  if (pct <= 0.1) circleEl.classList.add('crit');
+  else if (pct <= 0.25) circleEl.classList.add('warn');
+}
+
+function scaleScore(correct, total) {
+  const pct = correct / total;
+  let score = Math.round(200 + Math.pow(pct, 0.92) * 600);
+  score = Math.round(score / 10) * 10;
+  return Math.max(200, Math.min(800, score));
+}
+
+function sectionConfig() {
+  return section === 'rw' ? SAT_RW : SAT_MATH;
+}
+
+function sectionCount() {
+  return section === 'rw' ? RW_Q : MATH_Q;
+}
+
+function getQuestions() {
+  return section === 'rw' ? rwQuestions : mathQuestions;
+}
+
+function getAnswers() {
+  return section === 'rw' ? rwAnswers : mathAnswers;
+}
+
+function getMarked() {
+  return section === 'rw' ? rwMarked : mathMarked;
+}
+
+function pickSessionQuestions() {
+  rwQuestions = window.SAT_QUESTION_BANK.pickUniqueRW(RW_Q);
+  mathQuestions = window.SAT_QUESTION_BANK.pickUniqueMath(MATH_Q);
+  rwAnswers = Array(RW_Q).fill(null);
+  mathAnswers = Array(MATH_Q).fill(null);
+  rwMarked = Array(RW_Q).fill(false);
+  mathMarked = Array(MATH_Q).fill(false);
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+
+function clearTimers() {
+  clearInterval(sectionTimerId);
+  clearInterval(questionTimerId);
+}
+
+function updateQuestionTimerUI() {
+  document.getElementById('question-time-text').textContent = formatTime(questionTimeLeft);
+  const cfg = sectionConfig();
+  document.getElementById('q-avg-label').textContent = `SAT avg: ${cfg.perQ} sec/question`;
+  setPie(document.getElementById('question-pie'), questionTimeLeft, questionTimeTotal);
+}
+
+function startQuestionTimer() {
+  clearInterval(questionTimerId);
+  questionTimeTotal = sectionConfig().perQ;
+  questionTimeLeft = questionTimeTotal;
+  updateQuestionTimerUI();
+  questionTimerId = setInterval(() => {
+    questionTimeLeft -= 1;
+    updateQuestionTimerUI();
+    if (questionTimeLeft <= 0) clearInterval(questionTimerId);
+  }, 1000);
+}
+
+function updateSectionTimerUI() {
+  document.getElementById('section-time-text').textContent = formatTime(sectionTimeLeft);
+  setPie(document.getElementById('section-pie'), sectionTimeLeft, sectionTimeTotal);
+}
+
+function startSectionTimer() {
+  clearInterval(sectionTimerId);
+  const cfg = sectionConfig();
+  const count = sectionCount();
+  sectionTimeTotal = Math.round(cfg.min * 60 * count / cfg.q);
+  sectionTimeLeft = sectionTimeTotal;
+  updateSectionTimerUI();
+  sectionTimerId = setInterval(() => {
+    sectionTimeLeft -= 1;
+    updateSectionTimerUI();
+    if (sectionTimeLeft <= 0) {
+      clearTimers();
+      finishSection(true);
+    }
+  }, 1000);
+}
+
+function getFillHint(q) {
+  if (!q.stem.includes('______') || /Which choice completes/i.test(q.stem)) return '';
+  const bare = q.stem.replace(/______/g, '').trim();
+  if (bare.endsWith('?')) {
+    return 'Choose the word that best fills in the blank (______) in the question below.';
+  }
+  return 'Choose the word that best fills in the blank (______) in the sentence below.';
+}
+
+function renderQuestion() {
+  const qs = getQuestions();
+  const q = qs[currentIndex];
+  const answers = getAnswers();
+  const marked = getMarked();
+  const panel = document.getElementById('question-panel');
+  const selected = answers[currentIndex];
+
+  let html = '';
+  if (q.passage) html += `<div class="passage">${q.passage}</div>`;
+  if (section === 'math' && q.domain) {
+    html += `<p style="font-size:.72rem;color:var(--sat-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.04em">${q.domain} · ${q.skill || ''}</p>`;
+  }
+  const fillHint = getFillHint(q);
+  if (fillHint) {
+    html += `<p style="font-size:.85rem;color:var(--sat-muted);margin-bottom:.75rem">${fillHint}</p>`;
+  }
+  html += `<div class="question-stem">${q.stem}</div><div class="choices">`;
+  q.choices.forEach((c, i) => {
+    const sel = selected === i ? ' selected' : '';
+    html += `<div class="choice${sel}" data-i="${i}"><span class="choice-letter">${String.fromCharCode(65 + i)}</span><span>${c}</span></div>`;
+  });
+  html += '</div>';
+  panel.innerHTML = html;
+  panel.querySelectorAll('.choice').forEach(el => {
+    el.addEventListener('click', () => selectAnswer(parseInt(el.dataset.i, 10)));
+  });
+
+  const cfg = sectionConfig();
+  document.getElementById('header-section').textContent = section === 'rw' ? 'Reading and Writing' : 'Math';
+  document.getElementById('scale-note').textContent = `Scaled from ${cfg.min}-min SAT section (${cfg.q} Q)`;
+  document.getElementById('header-qnum').textContent = `Question ${currentIndex + 1} of ${qs.length}`;
+  document.getElementById('btn-mark').classList.toggle('active', marked[currentIndex]);
+  document.getElementById('btn-prev').disabled = currentIndex === 0;
+  document.getElementById('btn-next').textContent = currentIndex === qs.length - 1 ? 'Review' : 'Next →';
+  document.getElementById('btn-translate').classList.toggle('hidden', section !== 'rw');
+  document.getElementById('btn-calc').classList.toggle('hidden', section !== 'math');
+
+  startQuestionTimer();
+  renderGrid();
+}
+
+function renderGrid() {
+  const grid = document.getElementById('question-grid');
+  const qs = getQuestions();
+  const answers = getAnswers();
+  const marked = getMarked();
+  grid.innerHTML = '';
+  for (let i = 0; i < qs.length; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'q-btn';
+    if (i === currentIndex) btn.classList.add('current');
+    if (answers[i] !== null) btn.classList.add('answered');
+    if (marked[i]) btn.classList.add('marked');
+    btn.textContent = i + 1;
+    btn.addEventListener('click', () => { currentIndex = i; renderQuestion(); });
+    grid.appendChild(btn);
+  }
+}
+
+function selectAnswer(i) {
+  const answers = getAnswers();
+  answers[currentIndex] = i;
+  renderQuestion();
+}
+
+function beginTest() {
+  section = 'rw';
+  pickSessionQuestions();
+  currentIndex = 0;
+  showScreen('screen-exam');
+  startSectionTimer();
+  renderQuestion();
+}
+
+function startMathSection() {
+  section = 'math';
+  currentIndex = 0;
+  showScreen('screen-exam');
+  startSectionTimer();
+  renderQuestion();
+}
+
+function finishSection(timedOut) {
+  clearTimers();
+  if (section === 'rw') {
+    showScreen('screen-break');
+    return;
+  }
+  showResults();
+}
+
+function showResults() {
+  showScreen('screen-results');
+  const rwCorrect = rwQuestions.reduce((n, q, i) => n + (rwAnswers[i] === q.answer ? 1 : 0), 0);
+  const mathCorrect = mathQuestions.reduce((n, q, i) => n + (mathAnswers[i] === q.answer ? 1 : 0), 0);
+  const rwScaled = scaleScore(rwCorrect, RW_Q);
+  const mathScaled = scaleScore(mathCorrect, MATH_Q);
+  const total = rwScaled + mathScaled;
+
+  document.getElementById('total-score').textContent = total;
+  document.getElementById('score-range').textContent = `Estimated range: ${Math.max(400, total - 80)}–${Math.min(1600, total + 80)}`;
+  document.getElementById('rw-score').textContent = rwScaled;
+  document.getElementById('math-score').textContent = mathScaled;
+  document.getElementById('rw-raw').textContent = `${rwCorrect} / ${RW_Q} correct`;
+  document.getElementById('math-raw').textContent = `${mathCorrect} / ${MATH_Q} correct`;
+
+  const review = document.getElementById('review-list');
+  review.innerHTML = '';
+  const all = [
+    ...rwQuestions.map((q, i) => ({ q, i: i + 1, userAns: rwAnswers[i], sectionName: 'R&W' })),
+    ...mathQuestions.map((q, i) => ({ q, i: i + 1, userAns: mathAnswers[i], sectionName: 'Math' }))
+  ];
+  all.forEach(({ q, i, userAns, sectionName }) => {
+    const ok = userAns === q.answer;
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    div.innerHTML = `
+      <div style="display:flex;justify-content:space-between;font-weight:600;margin-bottom:.35rem">
+        <span>${sectionName} Q${i}</span>
+        <span class="${ok ? 'ri-correct' : 'ri-wrong'}">${ok ? '✓ Correct' : '✗ Incorrect'}</span>
+      </div>
+      <div>${stripHtml(q.stem)}</div>
+      ${!ok ? `<div style="font-size:.85rem;margin-top:.35rem"><strong>Yours:</strong> ${userAns !== null ? q.choices[userAns] : '(blank)'}</div>
+      <div style="font-size:.85rem"><strong>Correct:</strong> ${q.choices[q.answer]}</div>` : ''}
+      <div class="ri-explain">${q.domain ? `<span style="font-size:.75rem;color:var(--sat-muted)">${q.domain}${q.skill ? ' · ' + q.skill : ''}<br></span>` : ''}${q.explain || ''}</div>`;
+    review.appendChild(div);
+  });
+}
+
+const WORD_GUIDES = {
+  its: 'posvojni oblik bez apostrofa; označava da nešto pripada subjektu u jednini (npr. instituciji ili stvari)',
+  "it's": 'skraćeno od it is ili it has; ne označava vlasništvo',
+  their: 'posvojni oblik (njihov); koristi se kada subjekt posjeduje nešto',
+  "they're": 'skraćeno od they are (oni su); opisuje stanje ili radnju, ne vlasništvo',
+  there: 'označava mjesto (tamo); često u konstrukciji there is/there are',
+  we: 'zamjenica subjekta (mi); označava tko obavlja radnju',
+  us: 'objektna zamjenica (nas); ne stoji kao subjekt glavne rečenice',
+  our: 'posvojni oblik (naš); mora imati imenicu iza sebe',
+  ourselves: 'refleksivna zamjenica (sebe/sami); naglašava subjekt',
+  me: 'objektna zamjenica (mene); dolazi nakon prijedloga poput between',
+  i: 'zamjenica subjekta (ja); ne stoji nakon prijedloga between',
+  myself: 'refleksivna zamjenica; ovdje ne odgovara umetku između tebe i mene',
+  mine: 'posvojna zamjenica (moj); ne stoji iza prijedloga',
+  the: 'određeni član; u ovom kontekstu povezuje imenicu s opisom',
+  they: 'zamjenica subjekta (oni); potrebna prije glagola u rečenici',
+  them: 'objektna zamjenica (njih); ne može biti subjekt glagola submitted',
+  whose: 'posvojna upitna zamjenica (čiji); pita o vlasništvu',
+  "who's": 'skraćeno od who is ili who has; nije posvojni oblik',
+  whom: 'objektna forma who (koga); koristi se kada je osoba objekt',
+  who: 'subjektna forma (tko); ne koristi se kao objekt nakon contact',
+  effect: 'imenica (učinak, posljedica); dolazi nakon člana a/an',
+  affect: 'glagol (utjecati na); opisuje djelovanje na nešto',
+  affects: 'treće lice jednine glagola affect (utječe)',
+  effecting: 'gerund/participle od effect kao glagola; ovdje ne odgovara uz član a',
+  effects: 'množina imenice effect ili treće lice glagola; ne stoji nakon a',
+  effected: 'prošlo vrijeme glagola effect; ne odgovara uz a measurable ___',
+  fewer: 'manje — koristi se s brojivim imenicama (ljudi, stvari koje možeš brojati)',
+  less: 'manje — koristi se s nebrojivim imenicama (šećer, voda, vrijeme)',
+  few: 'malo, malobrojan; ne ide uz than u ovoj usporedbi količine',
+  littlest: 'superlativ od little; ne koristi se za usporedbu količine šećera',
+  among: 'među — koristi se kad ima tri ili više sudionika',
+  between: 'između — tipično za dvije strane ili dvije stvari',
+  amidst: 'usred; drugačiji registar i ne odgovara standardnoj konstrukciji ovdje',
+  within: 'unutar; označava prostor, ne dijeljenje među finalistima',
+  "you're": 'skraćeno od you are (ti si / vi ste)',
+  your: 'posvojni oblik (tvoj / vaš)',
+  yours: 'posvojna zamjenica (tvoj / vaš); ne može direktno modificirati sleeping bags',
+  you: 'zamjenica subjekta; nakon if treba you are (you\'re), ne samo you'
+};
+
+const TRANSITION_GUIDES = {
+  therefore: 'pokazuje posljedicu — druga rečenica slijedi iz prve',
+  consequently: 'isto kao therefore; naglašava uzročno-posljedičnu vezu',
+  'as a result': 'rezultat onoga što je rečeno prije',
+  however: 'uvedi suprotstavljenu ideju u odnosu na prethodnu rečenicu',
+  nevertheless: 'unatoč prethodnom; naglašava kontrast',
+  moreover: 'dodaje još jednu podržavajuću informaciju',
+  similarly: 'uspoređuje slične situacije',
+  'for example': 'uvodi primjer, ne zaključak',
+  'in contrast': 'ističe razliku u odnosu na prethodno',
+  instead: 'predlaže alternativu, ne posljedicu',
+  rather: 'radije; ne povezuje uzrok i posljedicu',
+  'in addition': 'dodaje novu, povezanu informaciju',
+  furthermore: 'proširuje prethodnu ideju',
+  meanwhile: 'istovremeno; označava paralelnu radnju',
+  thus: 'stoga, zbog toga; logički zaključak',
+  hence: 'zato, posljedično',
+  otherwise: 'inače; opisuje alternativni ishod'
+};
+
+function getSentenceEn(q) {
+  let stem = stripHtml(q.stem);
+  stem = stem.replace(/^Which choice completes the text to maintain parallel structure\?\s*/i, '');
+  stem = stem.replace(/^Which choice completes the text\?\s*/i, '');
+  if (stem.startsWith('Which choice completes the sentence?')) {
+    stem = stem.replace('Which choice completes the sentence?', '').trim();
+  }
+  if (stem.startsWith('Which choice best completes the text?')) {
+    stem = stem.replace('Which choice best completes the text?', '').trim();
+  }
+  return stem.replace(/^["']|["']$/g, '');
+}
+
+function getMeaningHr(q) {
+  let hr = stripHtml(q.stemHr || q.stem);
+  hr = hr.replace(/^Koja opcija nadopunjava tekst uz paralelnu gramatičku strukturu\?\s*/i, '');
+  hr = hr.replace(/^Koja opcija nadopunjava tekst uz paralelnu strukturu\?\s*/i, '');
+  hr = hr.replace(/^Koja riječ ispravno nadopunjuje tekst\?\s*/i, '');
+  hr = hr.replace(/^Koja opcija najbolje dovršava tekst\?\s*/i, '');
+  hr = hr.replace(/^Koja opcija dovršava rečenicu\?\s*/i, '');
+  hr = hr.replace(/^Koja opcija najbolje dovršava rečenicu\?\s*/i, '');
+  hr = hr.replace(/^Koja riječ najbolje dovršava rečenicu\?\s*/i, '');
+  return hr.replace(/^["']|["']$/g, '');
+}
+
+function getSubjectContextHint(q) {
+  const s = getSentenceEn(q).toLowerCase();
+  if (/\b(the lab|the board|the committee|the team|the observatory|the manuscript|the council|the agency|the firm)\b/.test(s)) {
+    return 'subjekt je u jednini (institucija ili stvar)';
+  }
+  if (/\b(students|volunteers|twins|hikers|members|assistants|nurses|employees)\b/.test(s)) {
+    return 'subjekt je u množini';
+  }
+  if (/\beach\b/.test(s)) {
+    return 'subjekt je each (gramatička jednina)';
+  }
+  if (/\bneither\b/.test(s)) {
+    return 'pažljivo: neither...nor — glagol se slaže s bližim subjektom';
+  }
+  return '';
+}
+
+function explainChoiceHr(q, idx) {
+  if (q.choiceExplainHr && q.choiceExplainHr[idx]) {
+    return q.choiceExplainHr[idx];
+  }
+
+  const en = q.choices[idx];
+  const hr = (q.choicesHr || q.choices)[idx];
+  const key = en.toLowerCase();
+  const prefix = (q.id || '').split('-')[0];
+  const ctx = getSubjectContextHint(q);
+
+  if (WORD_GUIDES[key]) {
+    let note = WORD_GUIDES[key];
+    if (ctx) note += `; ${ctx}`;
+    return `${en} = ${hr} → ${note}.`;
+  }
+
+  if (TRANSITION_GUIDES[key]) {
+    return `${hr} ("${en}") → ${TRANSITION_GUIDES[key]}.`;
+  }
+
+  if (prefix === 'par') {
+    const extra = ctx ? `; ${ctx}` : '';
+    return `${en} = ${hr} → provjeri je li isti gramatički oblik kao ostali glagoli u nizu (paralelna struktura)${extra}.`;
+  }
+
+  if (prefix === 'sva') {
+    const extra = ctx ? `; ${ctx}` : '';
+    return `${en} = ${hr} → oblik glagola; treba se slagati s brojem i osobom subjekta u rečenici${extra}.`;
+  }
+
+  if (prefix === 'punct') {
+    return `${en} → ${hr}: varijanta interpunkcije; provjeri gdje treba zarez, tačka-zarez ili bez promjene.`;
+  }
+
+  if (prefix === 'voc' || prefix === 'word') {
+    return `${en} = ${hr} → značenje riječi u kontekstu rečenice; razmisli koja riječ najbolje odgovara smislu.`;
+  }
+
+  if (q.passage || prefix === 'read' || prefix === 'dual' || prefix === 'notes' || prefix === 'rhet') {
+    return `${stripHtml(en)} → ${stripHtml(hr)}: ova opcija predstavlja moguće tumačenje; usporedi je s odlomkom i pitanjem.`;
+  }
+
+  return `${en} = ${hr} → provjeri gramatiku, logiku rečenice i kontekst prije nego odabereš.`;
+}
+
+function showTranslation() {
+  const q = getQuestions()[currentIndex];
+  const body = document.getElementById('translate-body');
+  let html = '';
+
+  if (q.passageHr) {
+    html += `<div class="tr-block"><div class="tr-label">Odlomak</div><div>${q.passageHr}</div></div>`;
+  }
+
+  html += `<div class="tr-block"><div class="tr-label">Rečenica glasi</div><div class="tr-quote">"${getSentenceEn(q)}"</div></div>`;
+  html += `<div class="tr-block"><div class="tr-label">Značenje</div><div>${getMeaningHr(q)}</div></div>`;
+  if (q.taskHr) {
+    html += `<div class="tr-block"><div class="tr-label">Zadatak</div><div>${q.taskHr}</div></div>`;
+  } else if (q.stem.includes('______')) {
+    html += `<div class="tr-block"><div class="tr-label">Zadatak</div><div>Odaberi riječ koja nadopunjava prazninu (______) u rečenici ili pitanju.</div></div>`;
+  }
+  html += `<div class="tr-block"><div class="tr-label">Objašnjenje</div>`;
+
+  q.choices.forEach((c, i) => {
+    const letter = String.fromCharCode(65 + i);
+    html += `<div class="tr-choice"><strong>${letter}.</strong> ${explainChoiceHr(q, i)}</div>`;
+  });
+  html += '</div>';
+
+  body.innerHTML = html;
+  document.getElementById('translate-modal').classList.remove('hidden');
+}
+
+function initCalculator() {
+  const display = document.getElementById('calc-display');
+  const grid = document.getElementById('calc-grid');
+  let expr = '0';
+  const keys = ['7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '0', '.', 'C', '+'];
+  keys.forEach(k => {
+    const btn = document.createElement('button');
+    btn.textContent = k;
+    if ('/*-+'.includes(k)) btn.classList.add('op');
+    btn.addEventListener('click', () => {
+      if (k === 'C') { expr = '0'; display.textContent = expr; return; }
+      if (expr === '0' && k !== '.') expr = k;
+      else expr += k;
+      display.textContent = expr;
+    });
+    grid.appendChild(btn);
+  });
+  const eq = document.createElement('button');
+  eq.textContent = '=';
+  eq.className = 'eq';
+  eq.addEventListener('click', () => {
+    try {
+      const val = Function('"use strict"; return (' + expr.replace(/[^0-9+\-*/.()]/g, '') + ')')();
+      expr = String(val);
+      display.textContent = expr;
+    } catch { display.textContent = 'Error'; expr = '0'; }
+  });
+  grid.appendChild(eq);
+}
+
+document.querySelectorAll('.pie-fill').forEach(c => {
+  c.style.strokeDasharray = PIE_C;
+  c.style.strokeDashoffset = 0;
+});
+
+initCalculator();
+
+document.getElementById('btn-start').addEventListener('click', beginTest);
+document.getElementById('btn-start-math').addEventListener('click', startMathSection);
+document.getElementById('btn-prev').addEventListener('click', () => { if (currentIndex > 0) { currentIndex--; renderQuestion(); }});
+document.getElementById('btn-next').addEventListener('click', () => {
+  if (currentIndex < getQuestions().length - 1) { currentIndex++; renderQuestion(); }
+});
+document.getElementById('btn-finish-section').addEventListener('click', () => {
+  const label = section === 'rw' ? 'Reading & Writing section' : 'Math section';
+  if (confirm(`Submit ${label}?`)) finishSection(false);
+});
+document.getElementById('btn-mark').addEventListener('click', () => {
+  const marked = getMarked();
+  marked[currentIndex] = !marked[currentIndex];
+  renderQuestion();
+});
+document.getElementById('btn-retry').addEventListener('click', () => { clearTimers(); showScreen('screen-welcome'); });
+document.getElementById('btn-translate').addEventListener('click', showTranslation);
+document.getElementById('modal-close').addEventListener('click', () => document.getElementById('translate-modal').classList.add('hidden'));
+document.getElementById('translate-modal').addEventListener('click', e => {
+  if (e.target.id === 'translate-modal') document.getElementById('translate-modal').classList.add('hidden');
+});
+document.getElementById('btn-calc').addEventListener('click', () => document.getElementById('calc-overlay').classList.remove('hidden'));
+document.getElementById('calc-close').addEventListener('click', () => document.getElementById('calc-overlay').classList.add('hidden'));
+document.getElementById('calc-overlay').addEventListener('click', e => {
+  if (e.target.id === 'calc-overlay') document.getElementById('calc-overlay').classList.add('hidden');
+});
+</script>
+</body>
+</html>

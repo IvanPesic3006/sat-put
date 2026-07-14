@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SAT Priprema — Za studente iz Hrvatske i regije</title>
+  <meta name="description" content="Besplatni SAT dijagnostički test i strukturirana priprema za američke fakultete. Objašnjenja na hrvatskom, plan učenja i praćenje napretka." />
+  <style>
+    :root {
+      --navy: #0f2744;
+      --blue: #1d4ed8;
+      --blue-light: #3b82f6;
+      --gold: #d97706;
+      --bg: #f8fafc;
+      --text: #0f172a;
+      --muted: #64748b;
+      --white: #fff;
+      --border: #e2e8f0;
+      --green: #15803d;
+      --font: "Segoe UI", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); color: var(--text); background: var(--bg); line-height: 1.6; }
+
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 1.25rem; }
+
+    /* Nav */
+    nav {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: .85rem 0;
+      position: sticky; top: 0; z-index: 50;
+    }
+    nav .container { display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-weight: 700; font-size: 1.15rem; color: var(--navy); }
+    .logo span { color: var(--blue); }
+    .nav-cta {
+      background: var(--blue);
+      color: white;
+      padding: .55rem 1.1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: .9rem;
+    }
+    .nav-cta:hover { background: var(--navy); }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(160deg, var(--navy) 0%, #1e3a5f 55%, var(--blue) 100%);
+      color: white;
+      padding: 4rem 0 5rem;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.2);
+      padding: .35rem .75rem;
+      border-radius: 20px;
+      font-size: .8rem;
+      margin-bottom: 1rem;
+    }
+    .hero h1 {
+      font-size: clamp(1.75rem, 4vw, 2.6rem);
+      line-height: 1.2;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+    .hero p { color: #cbd5e1; font-size: 1.05rem; margin-bottom: 1.75rem; }
+    .hero-actions { display: flex; gap: .75rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--gold);
+      color: white;
+      padding: .85rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: 1rem;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary:hover { filter: brightness(1.08); }
+    .btn-outline {
+      background: transparent;
+      color: white;
+      padding: .85rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      border: 2px solid rgba(255,255,255,.4);
+      font-size: 1rem;
+    }
+    .btn-outline:hover { background: rgba(255,255,255,.1); }
+    .hero-card {
+      background: white;
+      border-radius: 12px;
+      padding: 1.75rem;
+      color: var(--text);
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+    .hero-card h3 { font-size: 1rem; color: var(--muted); margin-bottom: .5rem; font-weight: 500; }
+    .hero-score { font-size: 3.5rem; font-weight: 800; color: var(--blue); line-height: 1; }
+    .hero-score-lbl { font-size: .85rem; color: var(--muted); margin: .5rem 0 1.25rem; }
+    .hero-stats { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+    .stat-box { background: var(--bg); border-radius: 8px; padding: .75rem; text-align: center; }
+    .stat-box .n { font-size: 1.4rem; font-weight: 700; color: var(--navy); }
+    .stat-box .l { font-size: .75rem; color: var(--muted); }
+
+    /* Sections */
+    section { padding: 4rem 0; }
+    section h2 {
+      font-size: 1.75rem;
+      text-align: center;
+      margin-bottom: .5rem;
+      color: var(--navy);
+    }
+    .section-sub {
+      text-align: center;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 2.5rem;
+    }
+
+    /* Problem */
+    .problem-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.25rem;
+    }
+    .problem-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+    .problem-card .icon { font-size: 1.75rem; margin-bottom: .75rem; }
+    .problem-card h3 { font-size: 1rem; margin-bottom: .5rem; }
+    .problem-card p { font-size: .9rem; color: var(--muted); }
+
+    /* Features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+    .feature {
+      display: flex;
+      gap: 1rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+    }
+    .feature-check {
+      flex-shrink: 0;
+      width: 28px; height: 28px;
+      background: #dcfce7;
+      color: var(--green);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: .85rem;
+    }
+    .feature h3 { font-size: .95rem; margin-bottom: .25rem; }
+    .feature p { font-size: .85rem; color: var(--muted); }
+
+    /* Pricing */
+    .pricing { background: white; }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .price-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      position: relative;
+    }
+    .price-card.featured {
+      border-color: var(--blue);
+      box-shadow: 0 8px 30px rgba(29,78,216,.12);
+    }
+    .price-badge {
+      position: absolute;
+      top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--blue);
+      color: white;
+      font-size: .75rem;
+      font-weight: 700;
+      padding: .25rem .75rem;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .price-card h3 { font-size: 1.1rem; margin-bottom: .5rem; }
+    .price-amount { font-size: 2.5rem; font-weight: 800; color: var(--navy); }
+    .price-amount small { font-size: 1rem; font-weight: 500; color: var(--muted); }
+    .price-period { font-size: .85rem; color: var(--muted); margin-bottom: 1.25rem; }
+    .price-list { list-style: none; margin-bottom: 1.5rem; }
+    .price-list li {
+      font-size: .9rem;
+      padding: .4rem 0;
+      border-bottom: 1px solid var(--border);
+      display: flex; gap: .5rem;
+    }
+    .price-list li::before { content: "✓"; color: var(--green); font-weight: 700; }
+    .price-btn {
+      display: block;
+      text-align: center;
+      padding: .8rem;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      font-size: .95rem;
+    }
+    .price-btn-primary { background: var(--blue); color: white; }
+    .price-btn-primary:hover { background: var(--navy); }
+    .price-btn-ghost { background: var(--bg); color: var(--navy); border: 2px solid var(--border); }
+
+    /* Steps */
+    .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+    .step { text-align: center; }
+    .step-num {
+      width: 40px; height: 40px;
+      background: var(--blue);
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700;
+      margin: 0 auto .75rem;
+    }
+    .step h3 { font-size: .9rem; margin-bottom: .35rem; }
+    .step p { font-size: .8rem; color: var(--muted); }
+
+    /* FAQ */
+    .faq { max-width: 680px; margin: 0 auto; }
+    .faq-item {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: .6rem;
+      overflow: hidden;
+    }
+    .faq-q {
+      padding: 1rem 1.25rem;
+      font-weight: 600;
+      font-size: .95rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      user-select: none;
+    }
+    .faq-q:hover { background: var(--bg); }
+    .faq-a {
+      padding: 0 1.25rem 1rem;
+      font-size: .9rem;
+      color: var(--muted);
+      display: none;
+    }
+    .faq-item.open .faq-a { display: block; }
+    .faq-item.open .faq-q span { transform: rotate(45deg); }
+
+    /* CTA band */
+    .cta-band {
+      background: var(--navy);
+      color: white;
+      text-align: center;
+      padding: 3.5rem 1.25rem;
+    }
+    .cta-band h2 { color: white; margin-bottom: .75rem; }
+    .cta-band p { color: #94a3b8; margin-bottom: 1.5rem; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: .8rem;
+      color: var(--muted);
+    }
+
+    @media (max-width: 768px) {
+      .hero-grid, .problem-grid, .features-grid, .pricing-grid, .steps { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo">SAT<span>Put</span></div>
+    <a href="test/index.html" class="nav-cta">Besplatni test →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="hero-badge">🇭🇷 Za studente iz Hrvatske i regije</div>
+      <h1>SAT priprema na tvom jeziku — put do američkog fakulteta</h1>
+      <p>Khan Academy je na engleskom. Roditelji ne znaju odakle početi. Mi nudimo besplatni dijagnostički test, objašnjenja na hrvatskom i jasan plan do ispita.</p>
+      <div class="hero-actions">
+        <a href="test/index.html" class="btn-primary">Pokreni besplatni test (20 min)</a>
+        <a href="#paketi" class="btn-outline">Pogledaj pakete</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h3>Primjer rezultata nakon dijagnostike</h3>
+      <div class="hero-score">1.240</div>
+      <div class="hero-score-lbl">Procijenjeni SAT skor · raspon ±80 bodova</div>
+      <div class="hero-stats">
+        <div class="stat-box"><div class="n">620</div><div class="l">Reading & Writing</div></div>
+        <div class="stat-box"><div class="n">620</div><div class="l">Math</div></div>
+        <div class="stat-box"><div class="n">3</div><div class="l">Slabe oblasti</div></div>
+        <div class="stat-box"><div class="n">8 tj</div><div class="l">Plan do cilja</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section>
+  <div class="container">
+    <h2>Zašto je SAT težak za nas?</h2>
+    <p class="section-sub">Većina resursa je napravljena za američke učenike. Mi pokrivamo ono što nedostaje.</p>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="icon">🌐</div>
+        <h3>Sve je na engleskom</h3>
+        <p>Khan Academy i Bluebook su odlični — ali roditelji i učenici ne razumiju sustav, rokove ni što znače rezultati.</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">📋</div>
+        <h3>Nema jasnog plana</h3>
+        <p>Ne znaš koliko bodova trebaš za NYU, Boston ili state college. Ne znaš kad se prijaviti ni kako platiti ispit iz Hrvatske.</p>
+      </div>
+      <div class="problem-card">
+        <div class="icon">💸</div>
+        <h3>Skupe američke platforme</h3>
+        <p>Magoosh i Princeton Review koštaju $129–400+. Za većinu obitelji iz regije to je previše bez lokalne podrške.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section style="background:white">
+  <div class="container">
+    <h2>Što dobivaš</h2>
+    <p class="section-sub">Kombinacija testova, objašnjenja na hrvatskom i praktičnih vodiča za prijavu na college.</p>
+    <div class="features-grid">
+      <div class="feature">
+        <div class="feature-check">✓</div>
+        <div>
+          <h3>Besplatni dijagnostički test</h3>
+          <p>20 minuta, SAT format, procjena skora 400–1600 i slabe točke.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-check">✓</div>
+        <div>
+          <h3>Objašnjenja na hrvatskom</h3>
+          <p>Svako pitanje s razlogom zašto je odgovor točan — ne samo engleski tutor speak.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-check">✓</div>
+        <div>
+          <h3>Plan učenja po tjednima</h3>
+          <p>Personalizirani raspored do datuma ispita — što vježbati i kad.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-check">✓</div>
+        <div>
+          <h3>Vodič za prijavu na college</h3>
+          <p>Common App, rokovi, SAT registracija iz HR, šta gledaju fakulteti.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-check">✓</div>
+        <div>
+          <h3>Full-length mock testovi</h3>
+          <p>Simulacije pravog digitalnog SAT-a s timerom i detaljnom analitikom.</p>
+        </div>
+      </div>
+      <div class="feature">
+        <div class="feature-check">✓</div>
+        <div>
+          <h3>Roditeljski pregled</h3>
+          <p>Roditelj vidi napredak bez da mora razumjeti SAT terminologiju.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section>
+  <div class="container">
+    <h2>Kako funkcionira</h2>
+    <p class="section-sub">Od nule do spremnosti za ispit u 4 koraka.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Besplatni test</h3>
+        <p>20 min dijagnostike — odmah vidiš procijenjeni skor.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Analiza</h3>
+        <p>Dobiješ slabosti po kategorijama i ciljni skor za tvoj college.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Plan učenja</h3>
+        <p>8-tjedni plan s dnevnim zadacima i mock testovima.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Ispit</h3>
+        <p>Prijaviš SAT uz naš vodič — spreman si za test dan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="paketi">
+  <div class="container">
+    <h2>Paketi</h2>
+    <p class="section-sub">Počni besplatno. Nadogradi kad vidiš gdje stojiš.</p>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <h3>Start — Besplatno</h3>
+        <div class="price-amount">0 €</div>
+        <div class="price-period">Zauvijek besplatno</div>
+        <ul class="price-list">
+          <li>1 dijagnostički test (20 min)</li>
+          <li>Procjena skora 400–1600</li>
+          <li>Pregled odgovora s objašnjenjima</li>
+          <li>PDF: „Što je SAT i kako ga polagati iz HR"</li>
+        </ul>
+        <a href="test/index.html" class="price-btn price-btn-ghost">Pokreni test</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-badge">NAJPOPULARNIJI</div>
+        <h3>Priprema — 8 tjedana</h3>
+        <div class="price-amount">79 <small>€</small></div>
+        <div class="price-period">jednokratno · pristup 3 mjeseca</div>
+        <ul class="price-list">
+          <li>Sve iz Start paketa</li>
+          <li>3 full-length mock testa</li>
+          <li>200+ vježbi po kategorijama</li>
+          <li>Personalizirani 8-tjedni plan</li>
+          <li>Objašnjenja na hrvatskom</li>
+          <li>Vodič: Common App + prijava</li>
+          <li>Email podrška (48h odgovor)</li>
+        </ul>
+        <a href="#kontakt" class="price-btn price-btn-primary">Prijavi se — uskoro</a>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:1.5rem;font-size:.85rem;color:var(--muted)">
+      Trebaš 1-on-1 poduku? <a href="#kontakt" style="color:var(--blue)">Individualni tutoring</a> od 35 €/sat.
+    </p>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section>
+  <div class="container">
+    <h2>Česta pitanja</h2>
+    <p class="section-sub">Odgovori za učenike i roditelje.</p>
+    <div class="faq">
+      <div class="faq-item">
+        <div class="faq-q">Je li ovo službeni College Board test? <span>+</span></div>
+        <div class="faq-a">Ne. Naši testovi su u SAT formatu za vježbu. Za službene testove koristi College Board Bluebook (besplatno). Mi dodajemo objašnjenja na hrvatskom i plan učenja.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Koliko SAT bodova trebam za američki faks? <span>+</span></div>
+        <div class="faq-a">Ovisi o fakultetu. State college: često 1000–1200. Dobri privatni fakulteti: 1300–1450. Ivy League: 1450+. U dijagnostici ti pomažemo postaviti realan cilj.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Mogu li polagati SAT iz Hrvatske? <span>+</span></div>
+        <div class="faq-a">Da. SAT se polaže u test centrima (npr. Zagreb). Registracija ide preko collegeboard.org. U plaćenom paketu dobiješ korak-po-korak vodič.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Zašto ne koristiti samo Khan Academy? <span>+</span></div>
+        <div class="faq-a">Khan je odličan i besplatan — preporučamo ga uz našu platformu. Mi dodajemo hrvatski jezik, plan za roditelje, vodič za prijavu i fokus na balkanske studente.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Koliko dugo trebam učiti? <span>+</span></div>
+        <div class="faq-a">Realno: 8–12 tjedana, 5–8 sati tjedno za značajan napredak. Naš 8-tjedni plan pretpostavlja upravo to — prilagodljiv je ako imaš manje vremena.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-band" id="kontakt">
+  <h2>Spreman provjeriti svoj skor?</h2>
+  <p>Besplatni test traje 20 minuta. Bez registracije. Odmah vidiš rezultat.</p>
+  <a href="test/index.html" class="btn-primary">Pokreni besplatni SAT test →</a>
+  <p style="margin-top:1.25rem;font-size:.85rem;color:#64748b">
+    Pitanja? Piši na <strong style="color:#94a3b8">info@satput.hr</strong> (primjer — zamijeni svojim emailom)
+  </p>
+</section>
+
+<footer>
+  <p>SATPut · Neovisna platforma za pripremu · Nije povezana s College Boardom</p>
+  <p style="margin-top:.35rem">© 2026 · SAT je zaštitni znak College Boarda</p>
+</footer>
+
+<script>
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => q.parentElement.classList.toggle('open'));
+});
+</script>
+</body>
+</html>
