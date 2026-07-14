@@ -30,6 +30,8 @@
 
   function rwFamily(q) {
     const id = String(q.id || '');
+    if (id.startsWith('4t-r-')) return `4tests-rw-${Number(id.split('-')[2]) % 10}`;
+    if (id.startsWith('4t-m-')) return `4tests-math-${Number(id.split('-')[2]) % 10}`;
     if (id.startsWith('gen2-')) {
       const parts = id.split('-');
       if (parts.length >= 4) return `gen2-${parts[2]}-${parts[3]}`;
@@ -175,6 +177,7 @@
     const parts = [];
     if (Array.isArray(window.RW_QUESTIONS_DATA)) parts.push(...window.RW_QUESTIONS_DATA);
     if (Array.isArray(window.RW_EXPAND_DATA)) parts.push(...window.RW_EXPAND_DATA);
+    if (window.FOURTESTS_IMPORT_DATA?.rw) parts.push(...window.FOURTESTS_IMPORT_DATA.rw);
 
     if (parts.length === 0) {
       console.error('RW question data missing — load rw-questions-data.js and rw-expand-data.js first.');
@@ -198,7 +201,10 @@
   const mathRaw = typeof window.buildSATMathBank === 'function'
     ? window.buildSATMathBank(POOL_SIZE)
     : [];
-  const math = shuffle(mathRaw);
+  const mathImport = Array.isArray(window.FOURTESTS_IMPORT_DATA?.math)
+    ? window.FOURTESTS_IMPORT_DATA.math
+    : [];
+  const math = shuffle([...mathRaw, ...mathImport]);
 
   window.SAT_QUESTION_BANK = {
     rw,
