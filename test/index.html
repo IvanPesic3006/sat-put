@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SAT Mini Practice — Random Questions</title>
+  <title>SAT Full Practice — Digital SAT Simulation</title>
   <style>
     :root {
       --sat-blue: #1e3a8a;
@@ -153,7 +153,8 @@
     .q-timer-box .q-timer-info { flex: 1; }
     .q-timer-box .q-timer-info .title { font-size: .75rem; font-weight: 600; color: var(--sat-muted); }
     .q-timer-box .q-timer-info .avg { font-size: .68rem; color: var(--sat-muted); }
-    .question-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: .35rem; margin-bottom: 1rem; }
+    .question-grid { display: grid; grid-template-columns: repeat(9, 1fr); gap: .35rem; margin-bottom: 1rem; }
+    .question-grid.math-grid { grid-template-columns: repeat(11, 1fr); }
     .q-btn {
       aspect-ratio: 1; border: 2px solid var(--sat-border); border-radius: 6px;
       background: white; font-size: .75rem; font-weight: 600; cursor: pointer; position: relative;
@@ -250,21 +251,23 @@
   <div class="welcome-card">
     <div class="welcome-logo">
       <span class="badge">PRACTICE</span>
-      <h1>SAT Mini Diagnostic</h1>
+      <h1>SAT Full Practice</h1>
     </div>
-    <h2>Free test — 20 English + 20 Math</h2>
-    <p>Each session: <strong>20 Reading &amp; Writing</strong> then <strong>20 Math</strong> questions from pools of <strong>1000+</strong> each. Timers scale from the real Digital SAT.</p>
+    <h2>Digital SAT simulation — full length</h2>
+    <p>Official-length test: <strong>54 Reading &amp; Writing</strong> (2 modules × 27) then <strong>44 Math</strong> (2 modules × 22), with real Digital SAT timing.</p>
     <div class="info-grid">
-      <div class="info-box"><div class="num">20+20</div><div class="lbl">Questions per test</div></div>
-      <div class="info-box"><div class="num">1000+</div><div class="lbl">R&amp;W pool</div></div>
-      <div class="info-box"><div class="num">1000+</div><div class="lbl">Math pool</div></div>
-      <div class="info-box"><div class="num">~24 min</div><div class="lbl">R&amp;W (scaled)</div></div>
-      <div class="info-box"><div class="num">~32 min</div><div class="lbl">Math (scaled)</div></div>
+      <div class="info-box"><div class="num">54+44</div><div class="lbl">Questions (98 total)</div></div>
+      <div class="info-box"><div class="num">64 min</div><div class="lbl">Reading &amp; Writing</div></div>
+      <div class="info-box"><div class="num">10 min</div><div class="lbl">Break (optional)</div></div>
+      <div class="info-box"><div class="num">70 min</div><div class="lbl">Math</div></div>
+      <div class="info-box"><div class="num">~2h 24m</div><div class="lbl">Total test time</div></div>
+      <div class="info-box"><div class="num">3000+</div><div class="lbl">Question pool</div></div>
     </div>
     <ul>
-      <li><strong>R&amp;W first</strong>, short break, then <strong>Math</strong> with calculator.</li>
-      <li>Large <strong>section pie timer</strong> + per-question pie timer.</li>
-      <li><strong>Prijevod na hrvatski</strong> on every R&amp;W question (with choice explanations).</li>
+      <li><strong>Module 1 → Module 2</strong> for each section, like the real Digital SAT.</li>
+      <li><strong>10-minute break</strong> between R&amp;W and Math (you can skip).</li>
+      <li><strong>Calculator</strong> available during Math modules.</li>
+      <li><strong>Prijevod na hrvatski</strong> on every R&amp;W question.</li>
     </ul>
     <button class="btn-primary" id="btn-start">Begin Test</button>
     <p class="disclaimer">Unofficial practice · Not affiliated with College Board</p>
@@ -275,8 +278,8 @@
   <div class="timer-bar">
     <div class="timer-bar-meta">
       <div class="section-label" id="header-section">Reading and Writing</div>
-      <div class="scale-note" id="scale-note">Scaled from 64-min SAT section</div>
-      <span class="question-pill" id="header-qnum">Question 1 of 20</span>
+      <div class="scale-note" id="scale-note">Digital SAT · Module 1 · 32 min</div>
+      <span class="question-pill" id="header-qnum">Question 1 of 27</span>
     </div>
     <div class="pie-wrap lg">
       <svg viewBox="0 0 120 120"><circle class="pie-track" cx="60" cy="60" r="54"/><circle class="pie-fill" id="section-pie" cx="60" cy="60" r="54"/></svg>
@@ -314,17 +317,27 @@
           <button class="btn-ghost" id="btn-prev">← Back</button>
           <button class="btn-secondary" id="btn-next">Next →</button>
         </div>
-        <button class="btn-primary" id="btn-finish-section">Finish Section</button>
+        <button class="btn-primary" id="btn-finish-section">Submit Module</button>
       </div>
     </aside>
+  </div>
+</div>
+
+<div id="screen-module" class="screen break-screen hidden">
+  <div class="break-card">
+    <h2 id="module-title">Module 2</h2>
+    <p id="module-desc">When you continue, the module timer will start immediately.</p>
+    <button class="btn-primary" id="btn-continue-module">Continue to Module 2 →</button>
   </div>
 </div>
 
 <div id="screen-break" class="screen break-screen hidden">
   <div class="break-card">
     <h2>Break</h2>
-    <p>You finished Reading &amp; Writing. Take a short break before Math — or continue right away.</p>
+    <p>You finished Reading &amp; Writing. The official SAT allows a <strong>10-minute break</strong> before Math.</p>
+    <div style="font-size:2.5rem;font-weight:800;color:var(--sat-blue);margin:1rem 0" id="break-timer">10:00</div>
     <button class="btn-primary" id="btn-start-math">Continue to Math →</button>
+    <p style="font-size:.8rem;color:var(--sat-muted);margin-top:1rem">Timer is optional — start Math whenever you're ready.</p>
   </div>
 </div>
 
@@ -352,7 +365,7 @@
     <div class="results-actions">
       <button class="btn-primary" id="btn-retry">New Random Test</button>
     </div>
-    <p class="disclaimer" style="margin-top:1.5rem">20 R&amp;W + 20 Math per session. Unofficial score estimate — not affiliated with College Board.</p>
+    <p class="disclaimer" style="margin-top:1.5rem">54 R&amp;W + 44 Math · Digital SAT timing · Unofficial score estimate — not affiliated with College Board.</p>
   </div>
 </div>
 
@@ -381,13 +394,17 @@
 <script src="math-bank.js"></script>
 <script src="questions-bank.js"></script>
 <script>
-const SAT_RW = { min: 64, q: 54, perQ: 71 };
-const SAT_MATH = { min: 70, q: 44, perQ: 95 };
-const RW_Q = 20;
-const MATH_Q = 20;
+const RW_MOD = { q: 27, min: 32 };
+const MATH_MOD = { q: 22, min: 35 };
+const RW_Q = 54;
+const MATH_Q = 44;
+const BREAK_SEC = 10 * 60;
+const SAT_RW = { perQ: 71 };
+const SAT_MATH = { perQ: 95 };
 const PIE_C = 2 * Math.PI * 54;
 
 let section = 'rw';
+let moduleNum = 1;
 let rwQuestions = [];
 let mathQuestions = [];
 let rwAnswers = [];
@@ -401,6 +418,8 @@ let questionTimeLeft = 0;
 let questionTimeTotal = 0;
 let sectionTimerId = null;
 let questionTimerId = null;
+let breakTimerId = null;
+let breakTimeLeft = BREAK_SEC;
 
 function stripHtml(s) {
   return String(s || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
@@ -429,6 +448,18 @@ function scaleScore(correct, total) {
   return Math.max(200, Math.min(800, score));
 }
 
+function modConfig() {
+  return section === 'rw' ? RW_MOD : MATH_MOD;
+}
+
+function moduleStartIndex() {
+  return (moduleNum - 1) * modConfig().q;
+}
+
+function moduleQuestionCount() {
+  return modConfig().q;
+}
+
 function sectionConfig() {
   return section === 'rw' ? SAT_RW : SAT_MATH;
 }
@@ -437,8 +468,18 @@ function sectionCount() {
   return section === 'rw' ? RW_Q : MATH_Q;
 }
 
-function getQuestions() {
+function getSectionQuestions() {
   return section === 'rw' ? rwQuestions : mathQuestions;
+}
+
+function getModuleQuestions() {
+  const all = getSectionQuestions();
+  const start = moduleStartIndex();
+  return all.slice(start, start + moduleQuestionCount());
+}
+
+function absIndex() {
+  return moduleStartIndex() + currentIndex;
 }
 
 function getAnswers() {
@@ -447,6 +488,10 @@ function getAnswers() {
 
 function getMarked() {
   return section === 'rw' ? rwMarked : mathMarked;
+}
+
+function getQuestions() {
+  return getModuleQuestions();
 }
 
 function pickSessionQuestions() {
@@ -466,6 +511,25 @@ function showScreen(id) {
 function clearTimers() {
   clearInterval(sectionTimerId);
   clearInterval(questionTimerId);
+  clearInterval(breakTimerId);
+}
+
+function updateBreakTimerUI() {
+  document.getElementById('break-timer').textContent = formatTime(breakTimeLeft);
+}
+
+function startBreakTimer() {
+  clearInterval(breakTimerId);
+  breakTimeLeft = BREAK_SEC;
+  updateBreakTimerUI();
+  breakTimerId = setInterval(() => {
+    breakTimeLeft -= 1;
+    updateBreakTimerUI();
+    if (breakTimeLeft <= 0) {
+      clearInterval(breakTimerId);
+      startMathSection();
+    }
+  }, 1000);
 }
 
 function updateQuestionTimerUI() {
@@ -494,9 +558,7 @@ function updateSectionTimerUI() {
 
 function startSectionTimer() {
   clearInterval(sectionTimerId);
-  const cfg = sectionConfig();
-  const count = sectionCount();
-  sectionTimeTotal = Math.round(cfg.min * 60 * count / cfg.q);
+  sectionTimeTotal = modConfig().min * 60;
   sectionTimeLeft = sectionTimeTotal;
   updateSectionTimerUI();
   sectionTimerId = setInterval(() => {
@@ -504,7 +566,7 @@ function startSectionTimer() {
     updateSectionTimerUI();
     if (sectionTimeLeft <= 0) {
       clearTimers();
-      finishSection(true);
+      finishModule(true);
     }
   }, 1000);
 }
@@ -522,9 +584,8 @@ function renderQuestion() {
   const qs = getQuestions();
   const q = qs[currentIndex];
   const answers = getAnswers();
-  const marked = getMarked();
+  const selected = answers[absIndex()];
   const panel = document.getElementById('question-panel');
-  const selected = answers[currentIndex];
 
   let html = '';
   if (q.passage) html += `<div class="passage">${q.passage}</div>`;
@@ -547,10 +608,12 @@ function renderQuestion() {
   });
 
   const cfg = sectionConfig();
-  document.getElementById('header-section').textContent = section === 'rw' ? 'Reading and Writing' : 'Math';
-  document.getElementById('scale-note').textContent = `Scaled from ${cfg.min}-min SAT section (${cfg.q} Q)`;
+  const mod = modConfig();
+  const secName = section === 'rw' ? 'Reading and Writing' : 'Math';
+  document.getElementById('header-section').textContent = `${secName} — Module ${moduleNum}`;
+  document.getElementById('scale-note').textContent = `Digital SAT · ${mod.min} min · ${mod.q} questions`;
   document.getElementById('header-qnum').textContent = `Question ${currentIndex + 1} of ${qs.length}`;
-  document.getElementById('btn-mark').classList.toggle('active', marked[currentIndex]);
+  document.getElementById('btn-mark').classList.toggle('active', getMarked()[absIndex()]);
   document.getElementById('btn-prev').disabled = currentIndex === 0;
   document.getElementById('btn-next').textContent = currentIndex === qs.length - 1 ? 'Review' : 'Next →';
   document.getElementById('btn-translate').classList.toggle('hidden', section !== 'rw');
@@ -562,30 +625,32 @@ function renderQuestion() {
 
 function renderGrid() {
   const grid = document.getElementById('question-grid');
-  const qs = getQuestions();
+  const count = moduleQuestionCount();
   const answers = getAnswers();
   const marked = getMarked();
+  const start = moduleStartIndex();
+  grid.classList.toggle('math-grid', section === 'math');
   grid.innerHTML = '';
-  for (let i = 0; i < qs.length; i++) {
+  for (let i = 0; i < count; i++) {
     const btn = document.createElement('button');
     btn.className = 'q-btn';
     if (i === currentIndex) btn.classList.add('current');
-    if (answers[i] !== null) btn.classList.add('answered');
-    if (marked[i]) btn.classList.add('marked');
-    btn.textContent = i + 1;
+    if (answers[start + i] !== null) btn.classList.add('answered');
+    if (marked[start + i]) btn.classList.add('marked');
+    btn.textContent = start + i + 1;
     btn.addEventListener('click', () => { currentIndex = i; renderQuestion(); });
     grid.appendChild(btn);
   }
 }
 
 function selectAnswer(i) {
-  const answers = getAnswers();
-  answers[currentIndex] = i;
+  getAnswers()[absIndex()] = i;
   renderQuestion();
 }
 
 function beginTest() {
   section = 'rw';
+  moduleNum = 1;
   pickSessionQuestions();
   currentIndex = 0;
   showScreen('screen-exam');
@@ -593,21 +658,52 @@ function beginTest() {
   renderQuestion();
 }
 
-function startMathSection() {
-  section = 'math';
+function showModuleTransition(secLabel, nextMod) {
+  document.getElementById('module-title').textContent = `${secLabel} — Module ${nextMod}`;
+  document.getElementById('module-desc').textContent =
+    `You completed Module ${nextMod - 1}. Module ${nextMod} has ${modConfig().q} questions and ${modConfig().min} minutes.`;
+  document.getElementById('btn-continue-module').textContent = `Continue to Module ${nextMod} →`;
+  showScreen('screen-module');
+}
+
+function continueToNextModule() {
+  moduleNum = 2;
   currentIndex = 0;
   showScreen('screen-exam');
   startSectionTimer();
   renderQuestion();
 }
 
-function finishSection(timedOut) {
+function startMathSection() {
+  clearInterval(breakTimerId);
+  section = 'math';
+  moduleNum = 1;
+  currentIndex = 0;
+  showScreen('screen-exam');
+  startSectionTimer();
+  renderQuestion();
+}
+
+function finishModule(timedOut) {
   clearTimers();
-  if (section === 'rw') {
+  if (section === 'rw' && moduleNum === 1) {
+    showModuleTransition('Reading and Writing', 2);
+    return;
+  }
+  if (section === 'rw' && moduleNum === 2) {
     showScreen('screen-break');
+    startBreakTimer();
+    return;
+  }
+  if (section === 'math' && moduleNum === 1) {
+    showModuleTransition('Math', 2);
     return;
   }
   showResults();
+}
+
+function finishSection(timedOut) {
+  finishModule(timedOut);
 }
 
 function showResults() {
@@ -863,18 +959,19 @@ document.querySelectorAll('.pie-fill').forEach(c => {
 initCalculator();
 
 document.getElementById('btn-start').addEventListener('click', beginTest);
+document.getElementById('btn-continue-module').addEventListener('click', continueToNextModule);
 document.getElementById('btn-start-math').addEventListener('click', startMathSection);
 document.getElementById('btn-prev').addEventListener('click', () => { if (currentIndex > 0) { currentIndex--; renderQuestion(); }});
 document.getElementById('btn-next').addEventListener('click', () => {
   if (currentIndex < getQuestions().length - 1) { currentIndex++; renderQuestion(); }
 });
 document.getElementById('btn-finish-section').addEventListener('click', () => {
-  const label = section === 'rw' ? 'Reading & Writing section' : 'Math section';
-  if (confirm(`Submit ${label}?`)) finishSection(false);
+  const secName = section === 'rw' ? 'Reading & Writing' : 'Math';
+  if (confirm(`Submit ${secName} Module ${moduleNum}?`)) finishModule(false);
 });
 document.getElementById('btn-mark').addEventListener('click', () => {
   const marked = getMarked();
-  marked[currentIndex] = !marked[currentIndex];
+  marked[absIndex()] = !marked[absIndex()];
   renderQuestion();
 });
 document.getElementById('btn-retry').addEventListener('click', () => { clearTimers(); showScreen('screen-welcome'); });
