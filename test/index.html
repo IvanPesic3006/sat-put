@@ -387,10 +387,12 @@
   </div>
 </div>
 
+<script src="hr-translate.js"></script>
 <script src="rw-questions-data.js"></script>
 <script src="rw-expand-data.js"></script>
 <script src="4tests-import-data.js"></script>
 <script src="sqb-import-data.js"></script>
+<script src="rw-hr-overlay.js"></script>
 <script src="math-bank.js"></script>
 <script src="questions-bank.js"></script>
 <script>
@@ -893,27 +895,43 @@ function explainChoiceHr(q, idx) {
   return `${en} = ${hr} → provjeri gramatiku, logiku rečenice i kontekst prije nego odabereš.`;
 }
 
+function getHrOverlay() {
+  return (typeof window !== 'undefined' && window.RW_HR_OVERLAY) || {};
+}
+
+function escapeHtml(s) {
+  return String(s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
 function showTranslation() {
   const q = getQuestions()[currentIndex];
   const body = document.getElementById('translate-body');
+  const overlay = getHrOverlay();
+  const view = HR_TRANSLATE.buildHrView(q, overlay);
   let html = '';
 
-  if (q.passageHr) {
-    html += `<div class="tr-block"><div class="tr-label">Odlomak</div><div>${q.passageHr}</div></div>`;
+  if (view.passageHr) {
+    html += `<div class="tr-block"><div class="tr-label">Odlomak</div><div class="tr-quote">${escapeHtml(view.passageHr)}</div></div>`;
   }
 
-  html += `<div class="tr-block"><div class="tr-label">Rečenica glasi</div><div class="tr-quote">"${getSentenceEn(q)}"</div></div>`;
-  html += `<div class="tr-block"><div class="tr-label">Značenje</div><div>${getMeaningHr(q)}</div></div>`;
-  if (q.taskHr) {
-    html += `<div class="tr-block"><div class="tr-label">Zadatak</div><div>${q.taskHr}</div></div>`;
-  } else if (q.stem.includes('______')) {
-    html += `<div class="tr-block"><div class="tr-label">Zadatak</div><div>Odaberi riječ koja nadopunjava prazninu (______) u rečenici ili pitanju.</div></div>`;
-  }
-  html += `<div class="tr-block"><div class="tr-label">Objašnjenje</div>`;
+  html += `<div class="tr-block"><div class="tr-label">Pitanje</div><div class="tr-quote">${escapeHtml(view.stemHr)}</div></div>`;
+  html += `<div class="tr-block"><div class="tr-label">Zadatak</div><div>${escapeHtml(view.taskHr)}</div></div>`;
 
-  q.choices.forEach((c, i) => {
+  html += `<div class="tr-block"><div class="tr-label">Opcije (A–D)</div>`;
+  view.choicesHr.forEach((choiceHr, i) => {
     const letter = String.fromCharCode(65 + i);
-    html += `<div class="tr-choice"><strong>${letter}.</strong> ${explainChoiceHr(q, i)}</div>`;
+    html += `<div class="tr-choice"><strong>${letter}.</strong> ${escapeHtml(choiceHr)}</div>`;
+  });
+  html += '</div>';
+
+  html += `<div class="tr-block"><div class="tr-label">Objašnjenje opcija</div>`;
+  view.choiceNotes.forEach((note, i) => {
+    const letter = String.fromCharCode(65 + i);
+    html += `<div class="tr-choice"><strong>${letter}.</strong> ${escapeHtml(note)}</div>`;
   });
   html += '</div>';
 
